@@ -1,159 +1,200 @@
-# Autonomous BRD-to-Data Intelligence Agent
+# Samvad
 
-**Enterprise-Grade AI Architecture Generator**
+A modern AI platform for transforming scattered conversations, emails, and raw product ideas into structured business, technical, and compliance-ready artifacts.
 
-![Status](https://img.shields.io/badge/Status-MVP-success)
-![Tech](https://img.shields.io/badge/Tech-FastAPI%20%7C%20React%20%7C%20Vertex%20AI-blue)
+![Status](https://img.shields.io/badge/status-MVP-success)
+![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688)
+![React](https://img.shields.io/badge/React-19-61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6)
+![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-FFCA28)
+![Vertex%20AI](https://img.shields.io/badge/Vertex%20AI-Gemini-4285F4)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)
+![Tailwind](https://img.shields.io/badge/Tailwind-CSS-38B2AC)
+![License](https://img.shields.io/badge/License-Internal-lightgrey)
 
-## 1. Project Overview
+## Overview
 
-This system is a deterministic multi-agent AI workflow engine that converts raw business ideas into enterprise-ready technical documentation. It orchestrates a sequential pipeline using Google Cloud Vertex AI (Gemini 2.0 Flash & Flash Lite) to generate:
+Samvad is an enterprise-inspired AI workflow that turns unstructured context into a polished set of deliverables for product, engineering, and compliance stakeholders. It combines multi-source ingestion from chats, emails, and product notes with a multi-agent orchestration layer and deterministic validation to produce structured outputs such as BRDs, gap analyses, data models, architecture insights, and compliance recommendations.
 
-1.  **Structured Business Requirements Document (BRD)**
-2.  **Gap & Risk Analysis**
-3.  **Normalized Data Dictionary (Database Schema)**
-4.  **Compliance & Security Audit (PII, GDPR, Encryption)**
+Whether you are validating a startup idea, consolidating stakeholder discussions, or transforming email threads into actionable requirements, Samvad helps teams move from ambiguity to clarity in minutes.
 
-The output is always strictly structured JSON, validated against Pydantic schemas to ensure engineering reliability, and rendered dynamically on the frontend.
+## Why Samvad
 
----
+- Ingest context from chats, emails, meeting notes, and product ideas
+- Extract relevant requirements, goals, constraints, and stakeholders automatically
+- Transform scattered inputs into a structured BRD with clear scope and priorities
+- Surface risks, missing requirements, and clarifying questions early
+- Produce normalized data models and sensitivity-aware compliance insights
+- Deliver a polished, modern experience for stakeholders and technical teams
+- Maintain a secure, scalable foundation with Firebase and Google Cloud services
 
-## 2. Key Features Implemented
+## System Architecture
 
-### **Generative AI Pipeline**
-- **Multi-Agent Orchestration**: Specialized agents handle individual steps of the architectural breakdown.
-    - `BRD Agent` (Gemini 2.0 Flash): Requirements generation.
-    - `Gap Agent` (Gemini 2.0 Flash): Logic critique.
-    - `Data Agent` (Gemini 2.0 Flash): Entity-Relationship modeling.
-    - `Compliance Agent` (Gemini 2.0 Flash Lite): Regulatory risk audit.
-- **Pydantic Validation**: All Agent outputs are strictly enforced via Pydantic schema validation.
+```mermaid
+flowchart LR
+    U[User / Stakeholder] --> F[React Frontend]
+    F --> B[FastAPI Backend]
+    B --> O[Orchestrator]
+    O --> BRD[BRD Agent]
+    O --> GAP[Gap Agent]
+    O --> DATA[Data Model Agent]
+    O --> COMP[Compliance Agent]
+    BRD --> V[Vertex AI / Gemini]
+    GAP --> V
+    DATA --> V
+    COMP --> V
+    B --> DB[(Firestore)]
+    F --> DB
+```
 
-### **Authentication & Security**
-- **Firebase Authentication**: Full integration with Firebase for JWT-based Email/Password and Google OAuth login flows.
-- **Custom Application-Level 2FA (TOTP)**: 
-  - Complete backend integration logic built in Python utilizing `pyotp` and Firebase Firestore to securely store generated secrets.
-  - Interactive "Enable 2FA" panel to instantly generate and display QR codes for Authenticator Apps (Authy, Google Authenticator).
-  - Secure React app-level `TwoFactorGate` interceptor enforcing a TOTP challenge upon every fresh sign-in if 2FA is toggled on.
-- **Environment & Secret Protection**: `.env` and `.gitignore` configured to securely house API keys and secrets. 
+## Workflow
 
-### **UI / UX Features**
-- **Sleek Enterprise Design Pattern**:
-  - React 18 frontend leveraging Tailwind CSS & Radix UI primitives.
-  - Granular application states with smooth `framer-motion` animations, minimal monochromatic toast alerts, and a professional aesthetic.
-- **Account & Project Settings**:
-  - Comprehensive user settings dashboard to view and tweak profile options, security preferences, password resets, and 2FA states.
-- **Project Versioning & History**:
-  - Persistent storage in Firestore, allowing users to save multiple Projects and quickly toggle between historical architectural generation versions per project.
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant B as Backend
+    participant V as Vertex AI
+    participant DB as Firestore
 
----
+    U->>F: Enter product idea
+    F->>B: Submit generation request
+    B->>V: Run BRD, gap, data, and compliance agents
+    V-->>B: Structured JSON responses
+    B->>DB: Persist project and artifacts
+    B-->>F: Return rendered insights
+    F-->>U: Display dashboard, BRD, risks, data model, compliance
+```
 
-## 3. Architecture & Tech Stack
+## Core Capabilities
 
-### **Frontend**
-- **Framework**: React 18, Vite, TypeScript
-- **Styling**: Tailwind CSS, Framer Motion, Radix UI (Shadcn-inspired components)
-- **State Management**: `zustand` / React Context (`useAuth`)
-- **API Communication**: `axios` with JWT request interceptors
+### Context Ingestion & Intelligence
+- Import context from chat threads, email exchanges, and free-form notes
+- Extract relevant business intent, user needs, constraints, and dependencies
+- Identify entities, workflows, and decision points from unstructured sources
+- Build a structured knowledge base for downstream BRD generation
 
-### **Backend**
-- **Framework**: Python 3.11+, FastAPI, Uvicorn
-- **AI Core**: Google Vertex AI SDK (`google-genai`)
-- **Database**: Google Cloud Firestore (Firebase Admin SDK)
-- **Authentication**: JWT token validation mirroring Firebase Auth
-- **Security Utilities**: `pyotp` (TOTP generation), `qrcode`
+### AI-Powered Artifact Generation
+- Business Requirements Document generation from multi-source context
+- Gap and risk analysis
+- Data model and data dictionary creation
+- Compliance and security review
+- Optional architecture visualization
 
----
+### Modern Product Experience
+- Intuitive workspace-based interface
+- Searchable project and BRD library
+- Guest and authenticated modes
+- Settings, profile, and security management
+- Responsive, polished UI powered by Tailwind and Radix primitives
 
-## 4. Setup Steps (Local Development)
+### Enterprise-Ready Foundations
+- Secure authentication with Firebase
+- Structured output validation using Pydantic
+- Cloud-native storage and backend services
+- Extensible orchestration for future AI agents and workflows
+
+## Tech Stack
+
+| Layer | Technologies |
+| --- | --- |
+| Frontend | React, TypeScript, Vite, Tailwind CSS, Framer Motion, Radix UI |
+| Backend | Python, FastAPI, Uvicorn |
+| AI | Google Vertex AI, Gemini models |
+| Data | Firestore, Pydantic |
+| Auth | Firebase Authentication, Firebase Admin SDK |
+| DevOps | Docker, Google Cloud Run |
+
+## Quick Start
 
 ### Prerequisites
 - Python 3.11+
 - Node.js 18+
-- Google Cloud Project with the **Vertex AI API** enabled.
-- Firebase Project configured and enabled.
+- A Google Cloud project with Vertex AI enabled
+- A Firebase project with Authentication and Firestore configured
 
-### Backend Setup
-1. Navigate to `/backend`:
-   ```bash
-   cd backend
-   ```
-2. Create and activate the virtual environment:
-   ```bash
-   python -m venv venv
-   # Mac/Linux:
-   source venv/bin/activate  
-   # Windows:
-   .\venv\Scripts\activate
-   ```
-3. Install strict dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Configure Environment:
-   - Copy `.env.example` to `.env`
-   - Fill in your `PROJECT_ID` and `LOCATION`.
-   - Ensure your Firebase Private Key JSON file path is correctly linked to `GOOGLE_APPLICATION_CREDENTIALS` (or run `gcloud auth application-default login`).
-5. Run Server:
-   ```bash
-   uvicorn backend.main:app --reload --port 8080
-   ```
-   *Note: if dealing with relative imports from the root folder, run `python -m uvicorn backend.main:app --reload --port 8080` from the root directory instead.*
+### Option 1: Use the helper script
 
-### Frontend Setup
-1. Navigate to `/frontend`:
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Configure Environment:
-   - Copy `.env.example` to `.env`.
-   - Insert your Firebase Configuration keys (`VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, etc).
-4. Run Development Server:
-   ```bash
-   npm run dev
-   ```
-5. Open `http://localhost:5173` in your browser.
+On Windows:
 
----
+```powershell
+start-dev.bat
+```
 
-## 5. Firebase & Vertex AI Setup Guide
+### Option 2: Run manually
 
-1. **Google Cloud Project**: Go to [Google Cloud Console](https://console.cloud.google.com/) and create a project. Enable the **Vertex AI** billing API.
-2. **Firebase Auth**: Go to the [Firebase Console](https://console.firebase.google.com/), add your GCP project, and initialize the **Authentication** and **Firestore Database** modules. 
-3. **Admin SDK**: Under Project Settings > Service Accounts, generate a new Private Key and save it securely on your backend (e.g., `backend/firebase_key.json`).
+Backend:
 
----
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+# Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-## 6. Deployment (Docker & Cloud Run)
+Then start the API:
 
-To containerize the backend for production:
+```bash
+uvicorn backend.main:app --reload --port 8080
+```
 
-1. **Build the image**:
-   ```bash
-   docker build -t auto-brd-backend ./backend
-   ```
-2. **Run container locally to test**:
-   ```bash
-   docker run -p 8080:8080 -e PROJECT_ID=your-id -e LOCATION=us-central1 -v ~/.config/gcloud:/root/.config/gcloud auto-brd-backend
-   ```
-3. **Deploy to Cloud Run via gcloud CLI**:
-   ```bash
-   gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/auto-brd-backend ./backend
-   
-   gcloud run deploy auto-brd-backend \
-     --image gcr.io/YOUR_PROJECT_ID/auto-brd-backend \
-     --platform managed \
-     --region us-central1 \
-     --allow-unauthenticated \
-     --set-env-vars PROJECT_ID=YOUR_PROJECT_ID,LOCATION=us-central1
-   ```
-4. **Deploy Frontend**:
-   - `npm run build` inside `/frontend`.
-   - Take the output folder `dist/` and deploy it onto Firebase Hosting, Vercel, or AWS S3. 
+Frontend:
 
----
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-**Built for Hackathon 2026.**
+Open http://localhost:5173 to view the application.
+
+## Environment Setup
+
+Configure the following before running the app:
+
+- Backend environment variables for Google Cloud and Firebase access
+- Frontend Firebase configuration values for authentication
+- Optional service account credentials for Vertex AI access
+
+## Project Structure
+
+```text
+samvad/
+├── backend/
+│   ├── routes/
+│   ├── schemas/
+│   ├── services/
+│   └── utils/
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── api/
+│   │   └── assets/
+├── docs/
+├── scripts/
+└── README.md
+```
+
+## Development Notes
+
+- The backend uses a deterministic multi-agent pipeline to generate structured outputs
+- Each agent response is validated using schema-based rules for reliability
+- The frontend is designed to be presentation-ready for demos, stakeholder reviews, and iterative product design
+
+## Roadmap
+
+- Expanded agent orchestration for deeper architecture planning
+- Richer export workflows such as PDF and Word delivery
+- Improved analytics and auditability for generated artifacts
+- Team collaboration, versioning, and shared workspaces
+
+## Contributing
+
+Contributions are welcome. If you are improving the product experience, strengthening the backend pipeline, or adding new agent capabilities, feel free to open an issue or submit a pull request.
+
+## Contact
+
+For questions, collaboration, or product feedback, reach out through the project repository or the maintainers listed in the workspace.
+
