@@ -144,11 +144,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // --- Email Sign In ---
   const signInWithEmail = useCallback(async (email: string, password: string) => {
+    if (!auth) throw new Error('Firebase Auth is not initialized.');
     await signInWithEmailAndPassword(auth, email, password);
   }, []);
 
   // --- Email Sign Up ---
   const signUpWithEmail = useCallback(async (email: string, password: string, displayName: string) => {
+    if (!auth) throw new Error('Firebase Auth is not initialized.');
     const result = await createUserWithEmailAndPassword(auth, email, password);
     // Set display name
     await updateProfile(result.user, { displayName });
@@ -158,23 +160,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // --- Password Reset ---
   const sendPasswordReset = useCallback(async (email: string) => {
+    if (!auth) throw new Error('Firebase Auth is not initialized.');
     await sendPasswordResetEmail(auth, email);
   }, []);
 
   // --- Resend Verification Email ---
   const resendVerificationEmail = useCallback(async () => {
-    if (!auth.currentUser) throw new Error('No user is signed in.');
+    if (!auth || !auth.currentUser) throw new Error('No user is signed in or Firebase Auth is not initialized.');
     await sendEmailVerification(auth.currentUser);
   }, []);
 
   // --- Sign Out ---
   const signOutUser = useCallback(async () => {
+    if (!auth) return;
     await signOut(auth);
   }, []);
 
   // --- Get ID Token ---
   const getIdToken = useCallback(async (): Promise<string | null> => {
-    if (!auth.currentUser) return null;
+    if (!auth || !auth.currentUser) return null;
     return await auth.currentUser.getIdToken();
   }, []);
 

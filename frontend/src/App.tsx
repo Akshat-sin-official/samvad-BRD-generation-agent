@@ -940,6 +940,7 @@ function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onNewProject={handleNewProject}
+        onOpenProject={handleSelectProject}
         isLoggedIn={isLoggedIn}
         user={user}
         onLoginClick={() => setShowLoginModal(true)}
