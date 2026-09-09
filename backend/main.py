@@ -22,7 +22,10 @@ app.add_middleware(
 # Initialize Vertex AI
 @app.on_event("startup")
 async def startup_event():
-    init_vertex()
+    try:
+        init_vertex()
+    except Exception as e:
+        print(f"⚠️ Vertex AI startup initialization skipped or failed: {e}")
 
 # Include routes
 app.include_router(generate.router, prefix="/api/v1")

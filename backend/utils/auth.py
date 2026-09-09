@@ -98,3 +98,16 @@ async def get_current_user(request: Request) -> CurrentUser:
 
 CurrentUserDep = Depends(get_current_user)
 
+
+async def get_optional_current_user(request: Request) -> Optional[CurrentUser]:
+    auth_header: str = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        return None
+    try:
+        return await get_current_user(request)
+    except Exception as e:
+        print(f"[Auth] Optional auth check failed: {e}")
+        return None
+
+
+OptionalCurrentUserDep = Depends(get_optional_current_user)

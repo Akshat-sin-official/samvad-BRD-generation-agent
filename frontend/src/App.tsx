@@ -292,10 +292,6 @@ function App() {
   const handleSubmit = async (e?: React.FormEvent, overrides?: { context_data?: string; context_data_2?: string; useDataset?: boolean }) => {
     e?.preventDefault?.();
     if (!idea.trim()) return;
-    if (!isLoggedIn) {
-      setError('Please log in with Google to generate and save projects.');
-      return;
-    }
     setLoading(true);
     setError(null);
     setResult(null);
@@ -412,32 +408,36 @@ function App() {
   };
 
   const renderContent = () => {
-    switch (activeTab) {
-      case 'projects':
-        return (
-          <ProjectsList
-            projects={projects}
-            onNewProject={handleNewProject}
-            onOpenProject={handleSelectProject}
-          />
-        );
-      case 'settings':
-        return <Settings />;
-      case 'brd-1':
-      case 'brd-2':
-      case 'brd-3':
-      case 'brd-4':
-      case 'brd-5': {
-        const spec = null;
-        return (
-          <BRDDetailView
-            spec={spec}
-            onNewProject={handleNewProject}
-          />
-        );
-      }
-      case 'new_project':
-      default:
+    if (activeTab === 'projects') {
+      return (
+        <ProjectsList
+          projects={projects}
+          onNewProject={handleNewProject}
+          onOpenProject={handleSelectProject}
+        />
+      );
+    }
+    if (activeTab === 'settings') {
+      return <Settings />;
+    }
+    if (activeTab !== 'new_project') {
+      // Viewing a specific project/BRD from sidebar
+      const matchingProject = projects.find(p => p.id === activeTab);
+      const spec = matchingProject ? {
+        id: matchingProject.id,
+        name: matchingProject.name,
+        updated: matchingProject.updatedAt,
+        description: matchingProject.description,
+      } : null;
+      return (
+        <BRDDetailView
+          spec={spec}
+          onNewProject={handleNewProject}
+        />
+      );
+    }
+
+    // Default: new_project generator view
         return (
           <div className="flex-1 flex flex-col h-full overflow-hidden relative">
 
@@ -896,9 +896,8 @@ function App() {
             {/* Transparency Layer - only show in generator */}
             <TransparencyFooter metadata={result?.metadata} />
           </div>
-        );
-    }
-  }
+    );
+  };
 
   // Application-level 2FA Gate
   if (isLoggedIn && is2faEnabled && !is2faVerified) {
@@ -941,6 +940,7 @@ function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onNewProject={handleNewProject}
+        onOpenProject={handleSelectProject}
         isLoggedIn={isLoggedIn}
         user={user}
         onLoginClick={() => setShowLoginModal(true)}

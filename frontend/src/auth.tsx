@@ -45,15 +45,15 @@ let firebaseApp: ReturnType<typeof initializeApp>;
 let auth: ReturnType<typeof getAuth>;
 
 try {
-  if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
-    throw new Error('Firebase configuration is incomplete.');
+  if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId) {
+    firebaseApp = initializeApp(firebaseConfig);
+    auth = getAuth(firebaseApp);
+    auth.languageCode = 'en';
+  } else {
+    console.warn('Firebase configuration is incomplete. Running in guest/demo mode.');
   }
-  firebaseApp = initializeApp(firebaseConfig);
-  auth = getAuth(firebaseApp);
-  auth.languageCode = 'en';
 } catch (error) {
   console.error('Firebase initialization failed:', error);
-  throw error;
 }
 
 // --- Types ---
@@ -79,6 +79,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     let isMounted = true;
+
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
 
     const checkRedirect = async () => {
       try {
@@ -139,11 +144,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // --- Email Sign In ---
   const signInWithEmail = useCallback(async (email: string, password: string) => {
+    if (!auth) throw new Error('Firebase Auth is not initialized.');
     await signInWithEmailAndPassword(auth, email, password);
   }, []);
 
   // --- Email Sign Up ---
   const signUpWithEmail = useCallback(async (email: string, password: string, displayName: string) => {
+    if (!auth) throw new Error('Firebase Auth is not initialized.');
     const result = await createUserWithEmailAndPassword(auth, email, password);
     // Set display name
     await updateProfile(result.user, { displayName });
@@ -153,23 +160,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // --- Password Reset ---
   const sendPasswordReset = useCallback(async (email: string) => {
+    if (!auth) throw new Error('Firebase Auth is not initialized.');
     await sendPasswordResetEmail(auth, email);
   }, []);
 
   // --- Resend Verification Email ---
   const resendVerificationEmail = useCallback(async () => {
-    if (!auth.currentUser) throw new Error('No user is signed in.');
+    if (!auth || !auth.currentUser) throw new Error('No user is signed in or Firebase Auth is not initialized.');
     await sendEmailVerification(auth.currentUser);
   }, []);
 
   // --- Sign Out ---
   const signOutUser = useCallback(async () => {
+    if (!auth) return;
     await signOut(auth);
   }, []);
 
   // --- Get ID Token ---
   const getIdToken = useCallback(async (): Promise<string | null> => {
-    if (!auth.currentUser) return null;
+    if (!auth || !auth.currentUser) return null;
     return await auth.currentUser.getIdToken();
   }, []);
 

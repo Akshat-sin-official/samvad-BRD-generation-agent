@@ -84,8 +84,8 @@ const NavItem = ({ isActive, onClick, disabled, icon: Icon, label, collapsed, ba
 // LibraryDropdown
 // ──────────────────────────────────────────────────
 const LibraryDropdown = ({
-  activeTab, setActiveTab, isLoggedIn, brds, collapsed,
-}: { activeTab: string; setActiveTab: (t: string) => void; isLoggedIn: boolean; brds: BRDListItem[]; collapsed: boolean }) => {
+  activeTab, setActiveTab, onOpenProject, isLoggedIn, brds, collapsed,
+}: { activeTab: string; setActiveTab: (t: string) => void; onOpenProject?: (id: string) => void; isLoggedIn: boolean; brds: BRDListItem[]; collapsed: boolean }) => {
   const [isOpen, setIsOpen] = useState(true);
   const isActive = activeTab === 'projects';
 
@@ -138,7 +138,14 @@ const LibraryDropdown = ({
               <button
                 key={brd.id}
                 type="button"
-                onClick={() => isLoggedIn && setActiveTab(brd.id)}
+                onClick={() => {
+                  if (!isLoggedIn) return;
+                  if (onOpenProject) {
+                    onOpenProject(brd.id);
+                  } else {
+                    setActiveTab(brd.id);
+                  }
+                }}
                 disabled={!isLoggedIn}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left text-[13px]
                   transition-all duration-200 ease-out
@@ -272,6 +279,7 @@ export interface SidebarProps {
   activeTab: string;
   setActiveTab: (t: string) => void;
   onNewProject: () => void;
+  onOpenProject?: (id: string) => void;
   isLoggedIn: boolean;
   user: User | null;
   onLoginClick: () => void;
@@ -283,7 +291,7 @@ export interface SidebarProps {
 }
 
 export function Sidebar({
-  activeTab, setActiveTab, onNewProject,
+  activeTab, setActiveTab, onNewProject, onOpenProject,
   isLoggedIn, user, onLoginClick, onOpenSearch, onLogout,
   brds, result, projectTitle = 'Project',
 }: SidebarProps) {
@@ -406,6 +414,7 @@ export function Sidebar({
             <LibraryDropdown
               activeTab={activeTab}
               setActiveTab={setActiveTab}
+              onOpenProject={onOpenProject}
               isLoggedIn={isLoggedIn}
               brds={brds}
               collapsed={collapsed}
