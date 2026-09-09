@@ -102,6 +102,34 @@ def _category_from_message(msg: str) -> Optional[str]:
     return None
 
 
+def get_simulated_enron_insights() -> dict[str, Any]:
+    """Return fluff insights for simulated Enron dataset (no CSV read)."""
+    # Matches the simulated senders/subjects/categories from dataset_loader fluff
+    out = {
+        "total_messages_processed": 50,
+        "bytes_read_mb": 0.1,
+        "risk_message_count": 3,
+        "risk_message_pct": 6.0,
+        "pii_exposure_count": 0,
+        "pii_exposure_pct": 0.0,
+        "top_mailboxes": [
+            {"name": "john.smith", "count": 5},
+            {"name": "sarah.chen", "count": 5},
+            {"name": "mike.johnson", "count": 5},
+            {"name": "lisa.wang", "count": 5},
+            {"name": "david.kim", "count": 5},
+        ],
+        "top_categories": [
+            {"name": "project", "count": 12},
+            {"name": "legal", "count": 8},
+            {"name": "billing", "count": 4},
+        ],
+        "unique_mailboxes": 10,
+    }
+    print("[DatasetInsights] Returning simulated Enron insights (50 messages)")
+    return out
+
+
 def extract_insights(
     csv_path: Optional[Path] = None,
     max_read_bytes: int = MAX_READ_BYTES,
@@ -109,8 +137,14 @@ def extract_insights(
 ) -> dict[str, Any]:
     """
     Stream CSV in chunks, extract risk/PII/entities/categories.
-    Returns insight dict suitable for BRD context.
+    When USE_ENRON_SIMULATION=1, returns simulated fluff insights (no file read).
     """
+    try:
+        from ..config import USE_ENRON_SIMULATION
+        if USE_ENRON_SIMULATION:
+            return get_simulated_enron_insights()
+    except Exception:
+        pass
     path = _resolve_path(csv_path)
     if not path:
         return {"error": "dataset_not_found", "total_messages_processed": 0}

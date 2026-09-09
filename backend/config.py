@@ -17,6 +17,8 @@ LOCATION = os.getenv("LOCATION", "us-central1")
 # --- Dataset (Enron emails for hackathon / BRD context) ---
 # Optional: override path to emails CSV (e.g. for Cloud Run volume mount)
 DATASET_EMAILS_CSV_PATH = os.getenv("DATASET_EMAILS_CSV_PATH", "")
+# When True (default), "Load Dataset" returns simulated Enron-style fluff instead of reading the CSV.
+USE_ENRON_SIMULATION = os.getenv("USE_ENRON_SIMULATION", "1").strip().lower() in ("1", "true", "yes")
 
 # --- Model IDs ---
 # NOTE: gemini-2.5-pro-preview-03-25 requires project allowlisting.
