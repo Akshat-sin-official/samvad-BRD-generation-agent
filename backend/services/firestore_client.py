@@ -231,6 +231,14 @@ def get_project_for_user(owner_id: str, project_id: str) -> Optional[Dict[str, A
     created_at = data.get("createdAt")
     updated_at = data.get("updatedAt")
 
+    versions = data.get("versions", [])
+    for v in versions:
+        v_created_at = v.get("createdAt")
+        if isinstance(v_created_at, DatetimeWithNanoseconds):
+            v["createdAt"] = _serialize_timestamp(v_created_at)
+        elif isinstance(v_created_at, datetime.datetime):
+            v["createdAt"] = v_created_at.isoformat()
+
     return {
         "id": doc.id,
         "ownerId": data.get("ownerId"),
@@ -239,22 +247,14 @@ def get_project_for_user(owner_id: str, project_id: str) -> Optional[Dict[str, A
         "idea": data.get("idea"),
         "status": data.get("status"),
         "currentVersion": data.get("currentVersion", 1),
-        "versions": data.get("versions", []),
+        "versions": versions,
         "artifacts": data.get("artifacts") or {},
         "lastRunMetadata": data.get("lastRunMetadata") or {},
         "createdAt": _serialize_timestamp(created_at)
         if isinstance(created_at, DatetimeWithNanoseconds)
-        else created_at,
+        else (created_at.isoformat() if isinstance(created_at, datetime.datetime) else created_at),
         "updatedAt": _serialize_timestamp(updated_at)
         if isinstance(updated_at, DatetimeWithNanoseconds)
-        else updated_at,
+        else (updated_at.isoformat() if isinstance(updated_at, datetime.datetime) else updated_at),
     }
-
-    # Format timestamps inside versions array
-    for v in result["versions"]:
-        v_created_at = v.get("createdAt")
-        if isinstance(v_created_at, DatetimeWithNanoseconds):
-            v["createdAt"] = _serialize_timestamp(v_created_at)
-
-    return result
 

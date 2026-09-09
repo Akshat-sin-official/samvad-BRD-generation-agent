@@ -11,6 +11,14 @@ from ..utils.auth import CurrentUserDep
 router = APIRouter()
 
 
+@router.get("/demo-context")
+def get_demo_context():
+    """Return sample email context data for demo and testing purposes."""
+    from ..services.dataset_loader import load_email_sample
+    context_data = load_email_sample()
+    return {"context_data": context_data or ""}
+
+
 class GenerateRequest(BaseModel):
     idea: str
 

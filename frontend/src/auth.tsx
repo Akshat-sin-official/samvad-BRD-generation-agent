@@ -45,15 +45,15 @@ let firebaseApp: ReturnType<typeof initializeApp>;
 let auth: ReturnType<typeof getAuth>;
 
 try {
-  if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
-    throw new Error('Firebase configuration is incomplete.');
+  if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId) {
+    firebaseApp = initializeApp(firebaseConfig);
+    auth = getAuth(firebaseApp);
+    auth.languageCode = 'en';
+  } else {
+    console.warn('Firebase configuration is incomplete. Running in guest/demo mode.');
   }
-  firebaseApp = initializeApp(firebaseConfig);
-  auth = getAuth(firebaseApp);
-  auth.languageCode = 'en';
 } catch (error) {
   console.error('Firebase initialization failed:', error);
-  throw error;
 }
 
 // --- Types ---
@@ -79,6 +79,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     let isMounted = true;
+
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
 
     const checkRedirect = async () => {
       try {
